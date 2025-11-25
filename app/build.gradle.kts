@@ -48,8 +48,8 @@ android {
 }
 
 dependencies {
-    implementation("com.google.firebase:firebase-perf-ktx:20.5.1")
-    implementation("com.google.firebase:firebase-perf-http:20.5.1")
+    implementation("com.google.firebase:firebase-perf-ktx:")
+
 
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
