@@ -2,12 +2,54 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- PERMISO DE INTERNET -->
+    <!-- ================================== -->
+    <!--          PERMISOS REQUERIDOS         -->
+    <!-- ================================== -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Permiso de cámara (si es necesario para la RecordingActivity) -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Necesario para servicios en segundo plano/persistentes en algunos casos -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- ================================== -->
+    <!--         CARACTERÍSTICAS DE HW        -->
+    <!-- ================================== -->
+    <!-- Asegura que la app solo se instale en dispositivos con micrófono -->
+    <uses-feature android:name="android.hardware.microphone" android:required="true" />
     <uses-feature android:name="android.hardware.camera" android:required="true" />
+
+    <!-- ================================== -->
+    <!-- 🗃️ QUERIES para Android 11 (API 30+) -->
+    <!-- Son OBLIGATORIAS para que SpeechRecognizer funcione correctamente, -->
+    <!-- ya que necesita interactuar con otros paquetes del sistema. -->
+    <!-- ================================== -->
+    <queries>
+        <!-- Para Google Voice Typing / Speech Services (proveedores comunes) -->
+        <package android:name="com.google.android.tts" />
+        <package android:name="com.google.android.googlequicksearchbox" />
+
+        <!-- Para Play Store (si ofreces la instalación de servicios como fallback) -->
+        <package android:name="com.android.vending" />
+
+        <!-- Intención genérica para encontrar cualquier proveedor de Speech Recognition -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+
+        <!-- Para abrir la configuración de la propia aplicación (permisos, etc.) -->
+        <intent>
+            <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS" />
+            <data android:scheme="package" />
+        </intent>
+    </queries>
+
+    <!-- ================================== -->
+    <!--          CONFIGURACIÓN APP           -->
+    <!-- ================================== -->
     <application
         android:name=".VoziApplication"
         android:allowBackup="true"
@@ -18,34 +60,57 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Vozi001"
-        tools:targetApi="31">
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31"
+        tools:ignore="GoogleAppIndexingWarning">
 
+        <!-- Metadatos para Firebase Performance y Crashlytics -->
         <meta-data
             android:name="firebase_performance_collection_enabled"
             android:value="true" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="true" />
 
+        <!-- Actividad principal de autenticación -->
         <activity
             android:name=".AuthActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Vozi001">
+            android:theme="@style/Theme.Vozi001"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- Actividad principal después del login -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:theme="@style/Theme.Vozi001"
-            />
+            android:windowSoftInputMode="adjustResize" />
 
+        <!-- Actividad de grabación (CRÍTICA) -->
         <activity
             android:name=".RecordingActivity"
             android:exported="false"
             android:theme="@style/Theme.Vozi001"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:launchMode="singleTop">
+
+            <!-- Filtro para recibir texto compartido desde otras apps (opcional) -->
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+
 
     </application>
 
