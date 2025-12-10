@@ -27,7 +27,8 @@ data class SessionUiState(
 )
 
 class SessionViewModel(
-    application: Application
+    application: Application,
+    mockSpeechService: SpeechRecognitionService
 ) : AndroidViewModel(application), SpeechListener {
 
     companion object {
