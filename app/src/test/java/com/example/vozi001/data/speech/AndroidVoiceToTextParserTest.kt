@@ -7,10 +7,15 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
+import org.junit.runner.RunWith // <-- NEW IMPORT
+import org.robolectric.RobolectricTestRunner // <-- NEW IMPORT
+import org.robolectric.annotation.Config
 
 /**
  * Tests unitarios para AndroidVoiceToTextParser
  */
+@RunWith(RobolectricTestRunner::class) // <-- ADD THIS LINE
+@Config(manifest = Config.NONE)
 class AndroidVoiceToTextParserTest {
     
     private lateinit var parser: AndroidVoiceToTextParser
